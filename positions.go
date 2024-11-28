@@ -99,6 +99,7 @@ type (
 	}
 
 	// UpdatePositionRequest represents the payload to update a position.
+	// todo: make validation or a builder that won't allow to create an invalid instance
 	UpdatePositionRequest struct {
 		// GuaranteedStop
 		// - Default value: false
