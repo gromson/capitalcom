@@ -36,9 +36,9 @@ type (
 		OrderLevel      float64           `json:"orderLevel"`
 		TimeInForce     string            `json:"timeInForce"`
 		GoodTillDate    time.Time         `json:"goodTillDate"`
-		GoodTillDateUTC time.Time         `json:"goodTillDateUTC"`
+		GoodTillDateUTC time.Time         `json:"goodTillDateUTC"` //nolint:tagliatelle
 		CreatedDate     time.Time         `json:"createdDate"`
-		CreatedDateUTC  time.Time         `json:"createdDateUTC"`
+		CreatedDateUTC  time.Time         `json:"createdDateUTC"` //nolint:tagliatelle
 		GuaranteedStop  bool              `json:"guaranteedStop"`
 		OrderType       string            `json:"orderType"`
 		StopDistance    float64           `json:"stopDistance"`
@@ -62,7 +62,7 @@ type (
 		Bid                      float64   `json:"bid"`
 		Offer                    float64   `json:"offer"`
 		UpdateTime               time.Time `json:"updateTime"`
-		UpdateTimeUTC            time.Time `json:"updateTimeUTC"`
+		UpdateTimeUTC            time.Time `json:"updateTimeUTC"` //nolint:tagliatelle
 		DelayTime                int       `json:"delayTime"`
 		StreamingPricesAvailable bool      `json:"streamingPricesAvailable"`
 		ScalingFactor            float64   `json:"scalingFactor"`

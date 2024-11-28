@@ -90,7 +90,7 @@ func (s *session) CreateNew(
 	}
 
 	headers := make(http.Header)
-	headers.Set("X-CAP-API-KEY", s.apiKey)
+	headers.Set("X-CAP-API-KEY", s.apiKey) //nolint:canonicalheader
 
 	res, err := post[SessionAccount](ctx, s.Client, "/session", reqPayload, headers)
 	if err != nil {
@@ -104,7 +104,7 @@ func (s *session) CreateNew(
 
 func (s *session) EncryptionKey(ctx context.Context) (*EncryptionKey, error) {
 	headers := make(http.Header)
-	headers.Set("X-CAP-API-KEY", s.apiKey)
+	headers.Set("X-CAP-API-KEY", s.apiKey) //nolint:canonicalheader
 
 	res, err := get[EncryptionKey](ctx, s.Client, "/session/encryptionKey", headers)
 	if err != nil {

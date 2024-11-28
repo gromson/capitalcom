@@ -56,11 +56,11 @@ type (
 	}
 
 	Leverages struct {
-		Shares           Leverage `json:"SHARES"`
-		Currencies       Leverage `json:"CURRENCIES"`
-		Indices          Leverage `json:"INDICES"`
-		Cryptocurrencies Leverage `json:"CRYPTOCURRENCIES"`
-		Commodities      Leverage `json:"COMMODITIES"`
+		Shares           Leverage `json:"SHARES"`           //nolint:tagliatelle
+		Currencies       Leverage `json:"CURRENCIES"`       //nolint:tagliatelle
+		Indices          Leverage `json:"INDICES"`          //nolint:tagliatelle
+		Cryptocurrencies Leverage `json:"CRYPTOCURRENCIES"` //nolint:tagliatelle
+		Commodities      Leverage `json:"COMMODITIES"`      //nolint:tagliatelle
 	}
 
 	Preferences struct {
@@ -94,11 +94,11 @@ type (
 	}
 
 	UpdateLeverages struct {
-		Shares           int `json:"SHARES,omitempty"`
-		Currencies       int `json:"CURRENCIES,omitempty"`
-		Indices          int `json:"INDICES,omitempty"`
-		Cryptocurrencies int `json:"CRYPTOCURRENCIES,omitempty"`
-		Commodities      int `json:"COMMODITIES,omitempty"`
+		Shares           int `json:"SHARES,omitempty"`           //nolint:tagliatelle
+		Currencies       int `json:"CURRENCIES,omitempty"`       //nolint:tagliatelle
+		Indices          int `json:"INDICES,omitempty"`          //nolint:tagliatelle
+		Cryptocurrencies int `json:"CRYPTOCURRENCIES,omitempty"` //nolint:tagliatelle
+		Commodities      int `json:"COMMODITIES,omitempty"`      //nolint:tagliatelle
 	}
 )
 
@@ -132,7 +132,7 @@ type (
 
 	Activity struct {
 		Date    time.Time `json:"date"`
-		DateUTC time.Time `json:"dateUTC"`
+		DateUTC time.Time `json:"dateUTC"` //nolint:tagliatelle
 		Epic    string    `json:"epic"`
 		DealID  string    `json:"dealId"`
 		Source  string    `json:"source"`
@@ -207,7 +207,7 @@ const (
 	TransactionTypeReserve                   TransactionType = "RESERVE"
 	TransactionTypeVoid                      TransactionType = "VOID"
 	TransactionTypeUnreserve                 TransactionType = "UNRESERVE"
-	TransactionTypeWriteOffOrCredit          TransactionType = "WRITE_OFF_OR_CREDIT"
+	TransactionTypeWriteOffOrCredit          TransactionType = "WRITE_OFF_OR_CREDIT" //nolint:gosec
 	TransactionTypeCreditFacility            TransactionType = "CREDIT_FACILITY"
 	TransactionTypeFxCommission              TransactionType = "FX_COMMISSION"
 	TransactionTypeComplaintSettlement       TransactionType = "COMPLAINT_SETTLEMENT"

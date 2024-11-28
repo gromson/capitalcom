@@ -27,15 +27,15 @@ type tokens struct {
 
 func (t *tokens) headers() http.Header {
 	headers := make(http.Header)
-	headers.Set(HeaderKeySecurityToken, t.securityToken)
-	headers.Set(HeaderTokenCST, t.cst)
+	headers.Set(HeaderKeySecurityToken, t.securityToken) //nolint:canonicalheader
+	headers.Set(HeaderTokenCST, t.cst)                   //nolint:canonicalheader
 
 	return headers
 }
 
 func (t *tokens) updateTokens(res *http.Response) {
-	t.securityToken = res.Header.Get(HeaderKeySecurityToken)
-	t.cst = res.Header.Get(HeaderTokenCST)
+	t.securityToken = res.Header.Get(HeaderKeySecurityToken) //nolint:canonicalheader
+	t.cst = res.Header.Get(HeaderTokenCST)                   //nolint:canonicalheader
 }
 
 type Client struct {
@@ -50,7 +50,7 @@ type Client struct {
 
 type Option func(*Client)
 
-func WithHttpClient(httpClient *http.Client) Option {
+func WithHTTPClient(httpClient *http.Client) Option {
 	return func(c *Client) {
 		c.httpClient = httpClient
 	}
@@ -81,7 +81,7 @@ func WithLogger(logger *slog.Logger) Option {
 func NewClient(apiKey string, opts ...Option) *Client {
 	c := &Client{
 		apiKey:     apiKey,
-		httpClient: createDefaultHttpClient(),
+		httpClient: createDefaultHTTPClient(),
 		host:       HostDemo,
 		apiPath:    APIPathV1,
 		logger:     slog.Default(),
@@ -107,11 +107,19 @@ func (c *Client) Trading() *trading {
 	return &trading{Client: c}
 }
 
+func (c *Client) Positions() *positions {
+	return &positions{Client: c}
+}
+
+func (c *Client) Orders() *orders {
+	return &orders{Client: c}
+}
+
 func (c *Client) path(resourcePath string) string {
 	return c.host + c.apiPath + resourcePath
 }
 
-func createDefaultHttpClient() *http.Client {
+func createDefaultHTTPClient() *http.Client {
 	const defaultClientTimeout = 10 * time.Second
 
 	return &http.Client{

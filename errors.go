@@ -2,7 +2,8 @@ package capitalcom
 
 import (
 	"fmt"
-	werrors "github.com/gromson/capitalcom/errors"
+
+	werrors "github.com/gromson/capitalcom/pkg/errors"
 )
 
 type RequestPayloadEncodingError struct{ werrors.WrapperError }

@@ -34,7 +34,7 @@ type (
 	Position struct {
 		ContractSize   int               `json:"contractSize"`
 		CreatedDate    time.Time         `json:"createdDate"`
-		CreatedDateUTC time.Time         `json:"createdDateUTC"`
+		CreatedDateUTC time.Time         `json:"createdDateUTC"` //nolint:tagliatelle
 		DealID         string            `json:"dealId"`
 		DealReference  string            `json:"dealReference"`
 		WorkingOrderID string            `json:"workingOrderId"`
@@ -62,7 +62,7 @@ type (
 		Bid                      float64   `json:"bid"`
 		Offer                    float64   `json:"offer"`
 		UpdateTime               time.Time `json:"updateTime"`
-		UpdateTimeUTC            time.Time `json:"updateTimeUTC"`
+		UpdateTimeUTC            time.Time `json:"updateTimeUTC"` //nolint:tagliatelle
 		DelayTime                int       `json:"delayTime"`
 		StreamingPricesAvailable bool      `json:"streamingPricesAvailable"`
 		ScalingFactor            int       `json:"scalingFactor"`
@@ -149,10 +149,10 @@ func (p *positions) Open(ctx context.Context, req OpenPositionRequest) (string, 
 }
 
 // Get retrieves the position details for the specified deal.
-func (p *positions) Get(ctx context.Context, dealId string) (*PositionDetail, error) {
+func (p *positions) Get(ctx context.Context, dealID string) (*PositionDetail, error) {
 	headers := p.tokens.headers()
 
-	res, err := get[PositionDetail](ctx, p.Client, "/positions/"+url.PathEscape(dealId), headers)
+	res, err := get[PositionDetail](ctx, p.Client, "/positions/"+url.PathEscape(dealID), headers)
 	if err != nil {
 		return nil, err
 	}
@@ -163,10 +163,10 @@ func (p *positions) Get(ctx context.Context, dealId string) (*PositionDetail, er
 }
 
 // Update updates the position for the specified deal.
-func (p *positions) Update(ctx context.Context, dealId string, req UpdatePositionRequest) (string, error) {
+func (p *positions) Update(ctx context.Context, dealID string, req UpdatePositionRequest) (string, error) {
 	headers := p.tokens.headers()
 
-	res, err := put[dealReferenceResponsePayload](ctx, p.Client, "/positions/"+url.PathEscape(dealId), req, headers)
+	res, err := put[dealReferenceResponsePayload](ctx, p.Client, "/positions/"+url.PathEscape(dealID), req, headers)
 	if err != nil {
 		return "", err
 	}
@@ -175,10 +175,10 @@ func (p *positions) Update(ctx context.Context, dealId string, req UpdatePositio
 }
 
 // Close closes the position for the specified deal.
-func (p *positions) Close(ctx context.Context, dealId string) error {
+func (p *positions) Close(ctx context.Context, dealID string) error {
 	headers := p.tokens.headers()
 
-	res, err := delete[dealReferenceResponsePayload](ctx, p.Client, "/positions/"+url.PathEscape(dealId), headers)
+	res, err := delete[dealReferenceResponsePayload](ctx, p.Client, "/positions/"+url.PathEscape(dealID), headers)
 	if err != nil {
 		return err
 	}
