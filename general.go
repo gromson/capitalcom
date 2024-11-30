@@ -24,7 +24,7 @@ func (p *serverTimeResponsePayload) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type pingResponsePayload struct {
+type StatusResponsePayload struct {
 	Status string `json:"status"`
 }
 
@@ -40,7 +40,7 @@ func (c *Client) Time(ctx context.Context) (time.Time, error) {
 func (c *Client) Ping(ctx context.Context) (string, error) {
 	headers := c.tokens.headers()
 
-	res, err := get[pingResponsePayload](ctx, c, "/ping", headers)
+	res, err := get[StatusResponsePayload](ctx, c, "/ping", headers)
 	if err != nil {
 		return "", err
 	}

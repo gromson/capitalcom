@@ -38,6 +38,7 @@ func (t *tokens) updateTokens(res *http.Response) {
 	t.cst = res.Header.Get(HeaderTokenCST)                   //nolint:canonicalheader
 }
 
+// Client Capital.com API client.
 type Client struct {
 	apiKey     string
 	httpClient *http.Client
@@ -48,37 +49,44 @@ type Client struct {
 	tokens *tokens
 }
 
-type Option func(*Client)
+// ClientOption is a functional for setting the config option for the client.
+type ClientOption func(*Client)
 
-func WithHTTPClient(httpClient *http.Client) Option {
+// WithHTTPClient sets the HTTP client for the client.
+func WithHTTPClient(httpClient *http.Client) ClientOption {
 	return func(c *Client) {
 		c.httpClient = httpClient
 	}
 }
 
-func WithHost(host string) Option {
+// WithHost sets the host for the client.
+func WithHost(host string) ClientOption {
 	return func(c *Client) {
 		c.host = host
 	}
 }
 
-func WithHostProd() Option {
+// WithHostProd sets the host for the client to production.
+func WithHostProd() ClientOption {
 	return WithHost(HostLive)
 }
 
-func WithAPIPath(apiPath string) Option {
+// WithAPIPath sets the API path for the client.
+func WithAPIPath(apiPath string) ClientOption {
 	return func(c *Client) {
 		c.apiPath = apiPath
 	}
 }
 
-func WithLogger(logger *slog.Logger) Option {
+// WithLogger sets the logger for the client.
+func WithLogger(logger *slog.Logger) ClientOption {
 	return func(c *Client) {
 		c.logger = logger
 	}
 }
 
-func NewClient(apiKey string, opts ...Option) *Client {
+// NewClient creates a new Capital.com API client.
+func NewClient(apiKey string, opts ...ClientOption) *Client {
 	c := &Client{
 		apiKey:     apiKey,
 		httpClient: createDefaultHTTPClient(),
@@ -95,24 +103,49 @@ func NewClient(apiKey string, opts ...Option) *Client {
 	return c
 }
 
+// Session access to the session.
 func (c *Client) Session() *session {
 	return &session{Client: c}
 }
 
+// Account access to the account resource.
 func (c *Client) Account() *account {
 	return &account{Client: c}
 }
 
+// Trading access to the trading resource.
 func (c *Client) Trading() *trading {
 	return &trading{Client: c}
 }
 
+// Positions access to the positions resource.
 func (c *Client) Positions() *positions {
 	return &positions{Client: c}
 }
 
+// Orders access to the orders resource.
 func (c *Client) Orders() *orders {
 	return &orders{Client: c}
+}
+
+// Markets access to the markets resource.
+func (c *Client) Markets() *markets {
+	return &markets{Client: c}
+}
+
+// Prices access to the prices resource.
+func (c *Client) Prices() *prices {
+	return &prices{Client: c}
+}
+
+// Sentiment access to the sentiment resource.
+func (c *Client) Sentiment() *sentiment {
+	return &sentiment{Client: c}
+}
+
+// Watchlists access to the watchlists resource.
+func (c *Client) Watchlists() *watchlists {
+	return &watchlists{Client: c}
 }
 
 func (c *Client) path(resourcePath string) string {

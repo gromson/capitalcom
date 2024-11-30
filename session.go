@@ -59,10 +59,6 @@ type AccountStatus struct {
 	HasActiveLiveAccounts bool `json:"hasActiveLiveAccounts"`
 }
 
-type LogOutStatus struct {
-	Status string `json:"status"`
-}
-
 type createSessionPayload struct {
 	Identifier        string `json:"identifier"`
 	Password          string `json:"password"`
@@ -142,15 +138,15 @@ func (s *session) SwitchActiveAccount(ctx context.Context, accountID string) (*A
 	return res.payload, nil
 }
 
-func (s *session) LogOut(ctx context.Context) (*LogOutStatus, error) {
+func (s *session) LogOut(ctx context.Context) (string, error) {
 	headers := s.tokens.headers()
 
-	res, err := delete[LogOutStatus](ctx, s.Client, "/session", headers)
+	res, err := delete[StatusResponsePayload](ctx, s.Client, "/session", headers)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	s.tokens.updateTokens(res.httpResponse)
 
-	return res.payload, nil
+	return res.payload.Status, nil
 }

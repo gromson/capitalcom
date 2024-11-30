@@ -89,10 +89,6 @@ type (
 		HedgingMode bool             `json:"hedgingMode"`
 	}
 
-	updatePreferencesResponsePayload struct {
-		Status string `json:"status"`
-	}
-
 	UpdateLeverages struct {
 		Shares           int `json:"SHARES,omitempty"`           //nolint:tagliatelle
 		Currencies       int `json:"CURRENCIES,omitempty"`       //nolint:tagliatelle
@@ -115,7 +111,7 @@ func (a *account) UpdatePreferences(
 		HedgingMode: hedgingMode,
 	}
 
-	res, err := put[updatePreferencesResponsePayload](ctx, a.Client, "/accounts/preferences", reqPayload, headers)
+	res, err := put[StatusResponsePayload](ctx, a.Client, "/accounts/preferences", reqPayload, headers)
 	if err != nil {
 		return "", err
 	}
