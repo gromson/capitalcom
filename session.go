@@ -62,7 +62,7 @@ type AccountStatus struct {
 type createSessionPayload struct {
 	Identifier        string `json:"identifier"`
 	Password          string `json:"password"`
-	EncryptedPassword bool   `json:"encryptedPassword"`
+	EncryptedPassword bool   `json:"encryptedPassword,omitempty"`
 }
 
 type switchAccountPayload struct {
@@ -86,7 +86,7 @@ func (s *session) CreateNew(
 	}
 
 	headers := make(http.Header)
-	headers.Set("X-CAP-API-KEY", s.apiKey) //nolint:canonicalheader
+	headers.Set(HeaderAPIKey, s.apiKey) //nolint:canonicalheader
 
 	res, err := post[SessionAccount](ctx, s.Client, "/session", reqPayload, headers)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *session) CreateNew(
 
 func (s *session) EncryptionKey(ctx context.Context) (*EncryptionKey, error) {
 	headers := make(http.Header)
-	headers.Set("X-CAP-API-KEY", s.apiKey) //nolint:canonicalheader
+	headers.Set(HeaderAPIKey, s.apiKey) //nolint:canonicalheader
 
 	res, err := get[EncryptionKey](ctx, s.Client, "/session/encryptionKey", headers)
 	if err != nil {

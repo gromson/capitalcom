@@ -12,6 +12,7 @@ const (
 
 	APIPathV1 = "/api/v1"
 
+	HeaderAPIKey           = "X-CAP-API-KEY" //nolint:gosec
 	HeaderKeySecurityToken = "X-SECURITY-TOKEN"
 	HeaderTokenCST         = "CST"
 )

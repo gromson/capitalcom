@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
-	"strconv"
 )
 
 type response[TResPayload any] struct {
@@ -23,7 +23,7 @@ func get[TResPayload any](
 	resourcePath string,
 	headers http.Header,
 ) (*response[TResPayload], error) {
-	return doRequest[TResPayload](ctx, c, resourcePath, http.MethodGet, nil, headers)
+	return doRequest[TResPayload](ctx, c, http.MethodGet, resourcePath, nil, headers)
 }
 
 func post[TResPayload any](
@@ -78,9 +78,9 @@ func prepareRequestBody(payload any) (*bytes.Buffer, error) {
 func doRequest[TResPayload any](
 	ctx context.Context,
 	c *Client,
-	resourcePath string,
 	method string,
-	reqBody *bytes.Buffer,
+	resourcePath string,
+	reqBody io.Reader,
 	headers http.Header,
 ) (*response[TResPayload], error) {
 	req, err := http.NewRequestWithContext(
@@ -92,7 +92,9 @@ func doRequest[TResPayload any](
 		return nil, NewRequestCreationError(err)
 	}
 
-	setRequestHeaders(req, reqBody, headers)
+	setRequestHeaders(req, headers)
+
+	c.logger.With("request", req).Debug("sending a request")
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
@@ -102,9 +104,11 @@ func doRequest[TResPayload any](
 	defer func() {
 		if err := res.Body.Close(); err != nil {
 			c.logger.With("error", err).
-				Error("failed to close session.CreateNew response body")
+				Error("failed to close a response body")
 		}
 	}()
+
+	c.logger.With("response", res).Debug("received a response")
 
 	if res.StatusCode != http.StatusOK {
 		return nil, handleErrorResponse(res)
@@ -122,9 +126,8 @@ func doRequest[TResPayload any](
 	}, nil
 }
 
-func setRequestHeaders(req *http.Request, reqBody *bytes.Buffer, headers http.Header) {
+func setRequestHeaders(req *http.Request, headers http.Header) {
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Content-Length", strconv.Itoa(reqBody.Len()))
 
 	for key, values := range headers {
 		for _, value := range values {
