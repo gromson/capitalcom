@@ -1,10 +1,13 @@
 package capitalcom
 
 import (
+	"errors"
 	"fmt"
 
 	werrors "github.com/gromson/capitalcom/pkg/errors"
 )
+
+var ErrPublicKeyTypeError = errors.New("the provided key is not an RSA public key")
 
 type RequestPayloadEncodingError struct{ werrors.WrapperError }
 
@@ -28,6 +31,12 @@ type ResponsePayloadDecodingError struct{ werrors.WrapperError }
 
 func NewResponsePayloadDecodingError(err error) ResponsePayloadDecodingError {
 	return ResponsePayloadDecodingError{werrors.Wrap(err, "failed to decode response payload")}
+}
+
+type PasswordEncodingError struct{ werrors.WrapperError }
+
+func NewPasswordEncodingError(err error) PasswordEncodingError {
+	return PasswordEncodingError{werrors.Wrap(err, "failed to encode password")}
 }
 
 type APIError struct {

@@ -23,6 +23,7 @@ func handleSessionCreation(w http.ResponseWriter, r *http.Request) {
 
 	if apiKey != expectedAPIKey {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+
 		return
 	}
 
@@ -85,6 +86,7 @@ func isAuthorized(w http.ResponseWriter, r *http.Request) bool {
 
 	if gotKeySecurityToken != expectedKeySecurityToken || gotCST != expectedCST {
 		w.WriteHeader(http.StatusUnauthorized)
+
 		return false
 	}
 

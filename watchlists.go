@@ -100,7 +100,7 @@ func (w *watchlists) AddMarket(ctx context.Context, watchlistID, epic string) (s
 func (w *watchlists) Delete(ctx context.Context, watchlistID string) (string, error) {
 	headers := w.tokens.headers()
 
-	res, err := delete[StatusResponsePayload](ctx,
+	res, err := del[StatusResponsePayload](ctx,
 		w.Client,
 		"/watchlists/"+url.PathEscape(watchlistID),
 		headers)
@@ -116,7 +116,7 @@ func (w *watchlists) Delete(ctx context.Context, watchlistID string) (string, er
 func (w *watchlists) RemoveMarket(ctx context.Context, watchlistID, epic string) (string, error) {
 	headers := w.tokens.headers()
 
-	res, err := delete[StatusResponsePayload](ctx,
+	res, err := del[StatusResponsePayload](ctx,
 		w.Client,
 		"/watchlists/"+url.PathEscape(watchlistID)+"/"+url.PathEscape(epic),
 		headers)

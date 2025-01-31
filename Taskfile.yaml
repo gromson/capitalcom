@@ -1,0 +1,47 @@
+version: '3'
+
+dotenv:
+  - '.env.local'
+  - '.env'
+
+includes:
+  docker: docker/Tasks.yaml
+
+tasks:
+  tidy:
+    desc: 'Run go mod tidy'
+    cmds:
+      - '{{.LOCAL_OR_DOCKER}} go mod tidy'
+    deps:
+      - docker:build
+
+  wsl:
+    desc: 'Run wsl'
+    cmds:
+      - '{{.LOCAL_OR_DOCKER}} wsl -fix ./... || true'
+    deps:
+      - docker:build
+
+  gofumpt:
+    desc: 'Run gofumpt'
+    cmds:
+      - '{{.LOCAL_OR_DOCKER}} gofumpt -l -w .'
+    deps:
+      - docker:build
+
+  testifylint:
+    desc: 'Run testifylint'
+    cmd: '{{.LOCAL_OR_DOCKER}} testifylint --fix ./...'
+    deps:
+      - docker:build
+
+  fix:
+    desc: 'Run fixers'
+    cmds:
+      - task: wsl
+      - task: testifylint
+      - task: gofumpt
+
+  lint:
+    desc: 'Run golangci-lint'
+    cmd: 'docker run -t --rm -v $(pwd):/app -v ~/go/pkg:/go/pkg -w /app golangci/golangci-lint:v1.63.1 golangci-lint run -v'

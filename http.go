@@ -56,7 +56,7 @@ func put[TResPayload any](
 	return doRequest[TResPayload](ctx, c, http.MethodPut, resourcePath, reqBody, headers)
 }
 
-func delete[TResPayload any](
+func del[TResPayload any](
 	ctx context.Context,
 	c *Client,
 	resourcePath string,

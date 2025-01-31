@@ -172,7 +172,7 @@ func (o *orders) Update(ctx context.Context, dealID string, req UpdateOrderReque
 func (o *orders) Delete(ctx context.Context, dealID string) (string, error) {
 	headers := o.tokens.headers()
 
-	res, err := delete[dealReferenceResponsePayload](ctx, o.Client, "/workingorders/"+url.PathEscape(dealID), headers)
+	res, err := del[dealReferenceResponsePayload](ctx, o.Client, "/workingorders/"+url.PathEscape(dealID), headers)
 	if err != nil {
 		return "", err
 	}

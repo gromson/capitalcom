@@ -87,7 +87,7 @@ func (pr *Price) UnmarshalJSON(data []byte) error {
 		Alias: (*Alias)(pr),
 	}
 
-	if err := json.Unmarshal(data, &aux); err != nil {
+	if err := json.Unmarshal(data, &aux); err != nil { //nolint:musttag
 		return NewResponsePayloadDecodingError(err)
 	}
 

@@ -141,7 +141,7 @@ func (s *session) SwitchActiveAccount(ctx context.Context, accountID string) (*A
 func (s *session) LogOut(ctx context.Context) (string, error) {
 	headers := s.tokens.headers()
 
-	res, err := delete[StatusResponsePayload](ctx, s.Client, "/session", headers)
+	res, err := del[StatusResponsePayload](ctx, s.Client, "/session", headers)
 	if err != nil {
 		return "", err
 	}

@@ -21,7 +21,7 @@ func TestClient_Time(t *testing.T) {
 	location := time.FixedZone("Test/Timezone", -2*3600)
 	serverTime := time.Date(2024, 11, 29, 13, 4, 6, 0, location)
 
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		payload := fmt.Sprintf(`{ "serverTime": %d }`, serverTime.UnixMilli())

@@ -178,7 +178,7 @@ func (p *positions) Update(ctx context.Context, dealID string, req UpdatePositio
 func (p *positions) Close(ctx context.Context, dealID string) error {
 	headers := p.tokens.headers()
 
-	res, err := delete[dealReferenceResponsePayload](ctx, p.Client, "/positions/"+url.PathEscape(dealID), headers)
+	res, err := del[dealReferenceResponsePayload](ctx, p.Client, "/positions/"+url.PathEscape(dealID), headers)
 	if err != nil {
 		return err
 	}

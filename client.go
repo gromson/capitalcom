@@ -105,47 +105,47 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 }
 
 // Session access to the session.
-func (c *Client) Session() *session {
+func (c *Client) Session() *session { //nolint:revive
 	return &session{Client: c}
 }
 
 // Account access to the account resource.
-func (c *Client) Account() *account {
+func (c *Client) Account() *account { //nolint:revive
 	return &account{Client: c}
 }
 
 // Trading access to the trading resource.
-func (c *Client) Trading() *trading {
+func (c *Client) Trading() *trading { //nolint:revive
 	return &trading{Client: c}
 }
 
 // Positions access to the positions resource.
-func (c *Client) Positions() *positions {
+func (c *Client) Positions() *positions { //nolint:revive
 	return &positions{Client: c}
 }
 
 // Orders access to the orders resource.
-func (c *Client) Orders() *orders {
+func (c *Client) Orders() *orders { //nolint:revive
 	return &orders{Client: c}
 }
 
 // Markets access to the markets resource.
-func (c *Client) Markets() *markets {
+func (c *Client) Markets() *markets { //nolint:revive
 	return &markets{Client: c}
 }
 
 // Prices access to the prices resource.
-func (c *Client) Prices() *prices {
+func (c *Client) Prices() *prices { //nolint:revive
 	return &prices{Client: c}
 }
 
 // Sentiment access to the sentiment resource.
-func (c *Client) Sentiment() *sentiment {
+func (c *Client) Sentiment() *sentiment { //nolint:revive
 	return &sentiment{Client: c}
 }
 
 // Watchlists access to the watchlists resource.
-func (c *Client) Watchlists() *watchlists {
+func (c *Client) Watchlists() *watchlists { //nolint:revive
 	return &watchlists{Client: c}
 }
 

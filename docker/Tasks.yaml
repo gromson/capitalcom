@@ -1,0 +1,24 @@
+version: '3'
+
+vars:
+  DOCKER_IMAGE_NAME: 'capitalcom'
+  DOCKER_IMAGE_TAG: 'latest'
+  DOCKER: 'docker run --rm -it -v ./:/app -v ~/go/pkg:/go/pkg -w /app {{.DOCKER_IMAGE_NAME}}:{{.DOCKER_IMAGE_TAG}}'
+  LOCAL_OR_DOCKER: '{{if eq .RUN_LOCAL "true"}}{{else}}{{.DOCKER}}{{end}}'
+
+tasks:
+  build:
+    desc: 'Build the docker image'
+    cmd: 'docker build -f ./docker/Dockerfile -t {{.DOCKER_IMAGE_NAME}}:{{.DOCKER_IMAGE_TAG}} .'
+    status:
+      - 'docker image inspect {{.DOCKER_IMAGE_NAME}}:{{.DOCKER_IMAGE_TAG}} > /dev/null 2>&1'
+
+  rebuild:
+    desc: 'Rebuild the docker image'
+    cmd: 'docker build -t {{.DOCKER_IMAGE_NAME}}:{{.DOCKER_IMAGE_TAG}} .'
+
+  sh:
+    desc: 'Run bash in the container'
+    cmd: '{{.DOCKER}} sh'
+    deps:
+      - build
