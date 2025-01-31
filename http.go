@@ -137,7 +137,7 @@ func setRequestHeaders(req *http.Request, headers http.Header) {
 }
 
 func handleErrorResponse(res *http.Response) error {
-	if res.StatusCode < http.StatusBadRequest || res.StatusCode >= http.StatusBadRequest {
+	if res.StatusCode < http.StatusBadRequest || res.StatusCode >= http.StatusInternalServerError {
 		return NewAPIError(res.StatusCode, "")
 	}
 
