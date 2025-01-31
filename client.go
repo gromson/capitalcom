@@ -42,6 +42,9 @@ func (t *tokens) updateTokens(res *http.Response) {
 // Client Capital.com API client.
 type Client struct {
 	apiKey     string
+	identifier string
+	password   string
+
 	httpClient *http.Client
 	host       string
 	apiPath    string
@@ -87,9 +90,11 @@ func WithLogger(logger *slog.Logger) ClientOption {
 }
 
 // NewClient creates a new Capital.com API client.
-func NewClient(apiKey string, opts ...ClientOption) *Client {
+func NewClient(apiKey, identifier, password string, opts ...ClientOption) *Client {
 	c := &Client{
 		apiKey:     apiKey,
+		identifier: identifier,
+		password:   password,
 		httpClient: createDefaultHTTPClient(),
 		host:       HostDemo,
 		apiPath:    APIPathV1,

@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func EncryptPassword(password string, key EncryptionKey) (string, error) {
+func encryptPassword(password string, key *EncryptionKey) (string, error) {
 	input := []byte(fmt.Sprintf("%s|%d", password, key.TimeStamp.UnixMilli()))
 	base64Input := base64.StdEncoding.EncodeToString(input)
 

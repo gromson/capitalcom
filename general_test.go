@@ -34,6 +34,8 @@ func TestClient_Time(t *testing.T) {
 	})
 
 	underTest := capitalcom.NewClient(expectedAPIKey,
+		identifier,
+		password,
 		capitalcom.WithHTTPClient(srv.Client()),
 		capitalcom.WithHost(srv.URL))
 
@@ -71,11 +73,13 @@ func TestClient_Ping(t *testing.T) {
 	})
 
 	underTest := capitalcom.NewClient(expectedAPIKey,
+		identifier,
+		password,
 		capitalcom.WithHTTPClient(srv.Client()),
 		capitalcom.WithHost(srv.URL))
 
 	// Act
-	_, err := underTest.Session().CreateNew(ctx, identifier, password, false)
+	_, err := underTest.Session().CreateNew(ctx, false)
 	require.NoError(t, err)
 
 	got, err := underTest.Ping(ctx)

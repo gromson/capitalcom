@@ -75,13 +75,25 @@ type session struct {
 
 func (s *session) CreateNew(
 	ctx context.Context,
-	identifier string,
-	password string,
 	passwordIsEncrypted bool,
 ) (*SessionAccount, error) {
+	pswd := s.password
+
+	if passwordIsEncrypted {
+		key, err := s.EncryptionKey(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		pswd, err = encryptPassword(s.password, key)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	reqPayload := createSessionPayload{
-		Identifier:        identifier,
-		Password:          password,
+		Identifier:        s.identifier,
+		Password:          pswd,
 		EncryptedPassword: passwordIsEncrypted,
 	}
 
