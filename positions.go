@@ -2,6 +2,7 @@ package capitalcom
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"time"
 )
@@ -33,8 +34,8 @@ type (
 
 	Position struct {
 		ContractSize   int               `json:"contractSize"`
-		CreatedDate    time.Time         `json:"createdDate"`
-		CreatedDateUTC time.Time         `json:"createdDateUTC"` //nolint:tagliatelle
+		CreatedDate    time.Time         `json:"-"`
+		CreatedDateUTC time.Time         `json:"-"`
 		DealID         string            `json:"dealId"`
 		DealReference  string            `json:"dealReference"`
 		WorkingOrderID string            `json:"workingOrderId"`
@@ -61,14 +62,74 @@ type (
 		NetChange                float64   `json:"netChange"`
 		Bid                      float64   `json:"bid"`
 		Offer                    float64   `json:"offer"`
-		UpdateTime               time.Time `json:"updateTime"`
-		UpdateTimeUTC            time.Time `json:"updateTimeUTC"` //nolint:tagliatelle
+		UpdateTime               time.Time `json:"-"`
+		UpdateTimeUTC            time.Time `json:"-"`
 		DelayTime                int       `json:"delayTime"`
 		StreamingPricesAvailable bool      `json:"streamingPricesAvailable"`
 		ScalingFactor            int       `json:"scalingFactor"`
 		MarketModes              []string  `json:"marketModes"`
 	}
 )
+
+func (m *Market) UnmarshalJSON(data []byte) error {
+	type alias Market
+
+	aux := &struct {
+		UpdateTimeString    string `json:"updateTime"`
+		UpdateTimeUTCString string `json:"updateTimeUTC"` //nolint:tagliatelle
+		*alias
+	}{
+		alias: (*alias)(m),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	var err error
+
+	m.UpdateTime, err = time.Parse(dateFormat, aux.UpdateTimeString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	m.UpdateTimeUTC, err = time.Parse(dateFormat, aux.UpdateTimeUTCString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	return nil
+}
+
+func (p *Position) UnmarshalJSON(data []byte) error {
+	type alias Position
+
+	aux := &struct {
+		CreatedDateString    string `json:"createdDate"`
+		CreatedDateUTCString string `json:"createdDateUTC"` //nolint:tagliatelle
+		*alias
+	}{
+		alias: (*alias)(p),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	var err error
+
+	p.CreatedDate, err = time.Parse(dateFormat, aux.CreatedDateString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	p.CreatedDateUTC, err = time.Parse(dateFormat, aux.CreatedDateUTCString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	return nil
+}
 
 // List retrieves all open positions for the authenticated user.
 func (p *positions) List(ctx context.Context) ([]PositionDetail, error) {

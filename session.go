@@ -23,8 +23,8 @@ type SessionAccount struct {
 }
 
 type EncryptionKey struct {
-	EncryptionKey string    `json:"encryptionKey"`
-	TimeStamp     time.Time `json:"timeStamp"`
+	EncryptionKey string    `json:"-"`
+	TimeStamp     time.Time `json:"-"`
 }
 
 func (e *EncryptionKey) UnmarshalJSON(data []byte) error {

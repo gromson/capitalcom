@@ -2,6 +2,7 @@ package capitalcom
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"time"
 )
@@ -12,7 +13,7 @@ type trading struct {
 
 type (
 	Deal struct {
-		Date           time.Time      `json:"date"`
+		Date           time.Time      `json:"-"`
 		Status         string         `json:"status"`
 		DealStatus     string         `json:"dealStatus"`
 		Epic           string         `json:"epic"`
@@ -31,6 +32,30 @@ type (
 		Status string `json:"status"`
 	}
 )
+
+func (d *Deal) UnmarshalJSON(data []byte) error {
+	type alias Deal
+
+	aux := struct {
+		DateString string `json:"date"`
+		*alias
+	}{
+		alias: (*alias)(d),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	var err error
+
+	d.Date, err = time.Parse(dateFormat, aux.DateString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	return nil
+}
 
 // Confirm retrieves the confirmation details for a given deal reference.
 func (t *trading) Confirm(ctx context.Context, dealReference string) (*Deal, error) {

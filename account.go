@@ -2,6 +2,7 @@ package capitalcom
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"strconv"
 	"time"
@@ -127,8 +128,8 @@ type (
 	}
 
 	Activity struct {
-		Date    time.Time `json:"date"`
-		DateUTC time.Time `json:"dateUTC"` //nolint:tagliatelle
+		Date    time.Time `json:"-"`
+		DateUTC time.Time `json:"-"`
 		Epic    string    `json:"epic"`
 		DealID  string    `json:"dealId"`
 		Source  string    `json:"source"`
@@ -146,6 +147,36 @@ type (
 		Filter string
 	}
 )
+
+func (a *Activity) UnmarshalJSON(data []byte) error {
+	type alias Activity
+
+	aux := &struct {
+		DateString    string `json:"date"`
+		DateUTCString string `json:"dateUTC"` //nolint:tagliatelle
+		*alias
+	}{
+		alias: (*alias)(a),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	var err error
+
+	a.Date, err = time.Parse(dateFormat, aux.DateString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	a.DateUTC, err = time.Parse(dateFormat, aux.DateUTCString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	return nil
+}
 
 func (a ActivityParams) toQueryString() string {
 	values := url.Values{}
@@ -240,8 +271,8 @@ type (
 	}
 
 	Transaction struct {
-		Date            time.Time       `json:"date"`
-		DateUTC         time.Time       `json:"dateUtc"`
+		Date            time.Time       `json:"-"`
+		DateUTC         time.Time       `json:"-"`
 		InstrumentName  string          `json:"instrumentName"`
 		TransactionType TransactionType `json:"transactionType"`
 		Note            string          `json:"note"`
@@ -251,6 +282,36 @@ type (
 		Status          string          `json:"status"`
 	}
 )
+
+func (p *Transaction) UnmarshalJSON(data []byte) error {
+	type alias Transaction
+
+	aux := &struct {
+		DateString    string `json:"date"`
+		DateUTCString string `json:"dateUTC"` //nolint:tagliatelle
+		*alias
+	}{
+		alias: (*alias)(p),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	var err error
+
+	p.Date, err = time.Parse(dateFormat, aux.DateString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	p.DateUTC, err = time.Parse(dateFormat, aux.DateUTCString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	return nil
+}
 
 func (p TransactionParams) toQueryString() string {
 	values := url.Values{}

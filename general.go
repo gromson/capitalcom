@@ -7,7 +7,7 @@ import (
 )
 
 type serverTimeResponsePayload struct {
-	ServerTime time.Time `json:"serverTime"`
+	ServerTime time.Time `json:"-"`
 }
 
 func (p *serverTimeResponsePayload) UnmarshalJSON(data []byte) error {

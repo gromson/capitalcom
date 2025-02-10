@@ -2,6 +2,7 @@ package capitalcom
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"strconv"
 	"strings"
@@ -161,7 +162,7 @@ type (
 		MarketStatus        string    `json:"marketStatus"`
 		NetChange           float64   `json:"netChange"`
 		PercentageChange    float64   `json:"percentageChange"`
-		UpdateTime          time.Time `json:"updateTime"`
+		UpdateTime          time.Time `json:"-"`
 		DelayTime           int       `json:"delayTime"`
 		Bid                 float64   `json:"bid"`
 		Offer               float64   `json:"offer"`
@@ -178,6 +179,30 @@ type (
 		Snapshot     Snapshot     `json:"snapshot"`
 	}
 )
+
+func (s *Snapshot) UnmarshalJSON(data []byte) error {
+	type alias Snapshot
+
+	aux := &struct {
+		UpdateTimeString string `json:"updateTime"`
+		*alias
+	}{
+		alias: (*alias)(s),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	var err error
+
+	s.UpdateTime, err = time.Parse(dateFormat, aux.UpdateTimeString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	return nil
+}
 
 func (m *markets) Detail(ctx context.Context, epic string) (*MarketDetails, error) {
 	headers := m.tokens.headers()

@@ -2,6 +2,7 @@ package capitalcom
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"time"
 )
@@ -35,10 +36,10 @@ type (
 		Leverage        float64           `json:"leverage"`
 		OrderLevel      float64           `json:"orderLevel"`
 		TimeInForce     string            `json:"timeInForce"`
-		GoodTillDate    time.Time         `json:"goodTillDate"`
-		GoodTillDateUTC time.Time         `json:"goodTillDateUTC"` //nolint:tagliatelle
-		CreatedDate     time.Time         `json:"createdDate"`
-		CreatedDateUTC  time.Time         `json:"createdDateUTC"` //nolint:tagliatelle
+		GoodTillDate    time.Time         `json:"-"`
+		GoodTillDateUTC time.Time         `json:"-"`
+		CreatedDate     time.Time         `json:"-"`
+		CreatedDateUTC  time.Time         `json:"-"`
 		GuaranteedStop  bool              `json:"guaranteedStop"`
 		OrderType       string            `json:"orderType"`
 		StopDistance    float64           `json:"stopDistance"`
@@ -61,14 +62,86 @@ type (
 		NetChange                float64   `json:"netChange"`
 		Bid                      float64   `json:"bid"`
 		Offer                    float64   `json:"offer"`
-		UpdateTime               time.Time `json:"updateTime"`
-		UpdateTimeUTC            time.Time `json:"updateTimeUTC"` //nolint:tagliatelle
+		UpdateTime               time.Time `json:"-"`
+		UpdateTimeUTC            time.Time `json:"-"`
 		DelayTime                int       `json:"delayTime"`
 		StreamingPricesAvailable bool      `json:"streamingPricesAvailable"`
 		ScalingFactor            float64   `json:"scalingFactor"`
 		MarketModes              []string  `json:"marketModes"`
 	}
 )
+
+func (d *MarketData) UnmarshalJSON(data []byte) error {
+	type alias MarketData
+
+	aux := &struct {
+		UpdateTimeString    string `json:"updateTime"`
+		UpdateTimeUTCString string `json:"updateTimeUTC"` //nolint:tagliatelle
+		*alias
+	}{
+		alias: (*alias)(d),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	var err error
+
+	d.UpdateTime, err = time.Parse(dateFormat, aux.UpdateTimeString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	d.UpdateTimeUTC, err = time.Parse(dateFormat, aux.UpdateTimeUTCString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	return nil
+}
+
+func (a *WorkingOrderData) UnmarshalJSON(data []byte) error {
+	type alias WorkingOrderData
+
+	aux := &struct {
+		GoodTillDateString    string `json:"goodTillDate"`
+		GoodTillDateUTCString string `json:"goodTillDateUTC"` //nolint:tagliatelle
+		CreatedDateString     string `json:"createdDate"`
+		CreatedDateUTCString  string `json:"createdDateUTC"` //nolint:tagliatelle
+		*alias
+	}{
+		alias: (*alias)(a),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	var err error
+
+	a.GoodTillDate, err = time.Parse(dateFormat, aux.GoodTillDateString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	a.GoodTillDateUTC, err = time.Parse(dateFormat, aux.GoodTillDateUTCString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	a.CreatedDate, err = time.Parse(dateFormat, aux.CreatedDateString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	a.CreatedDateUTC, err = time.Parse(dateFormat, aux.CreatedDateUTCString)
+	if err != nil {
+		return NewResponsePayloadDecodingError(err)
+	}
+
+	return nil
+}
 
 func (o *orders) List(ctx context.Context) ([]WorkingOrderDetail, error) {
 	headers := o.tokens.headers()
@@ -107,7 +180,7 @@ type (
 		Level float64 `json:"level"`
 
 		// GoodTillDate - order cancellation date in UTC time
-		GoodTillDate time.Time `json:"goodTillDate,omitempty"`
+		GoodTillDate time.Time `json:"-"`
 
 		// GuaranteedStop must be true if a guaranteed stop is required.
 		// - Default value: false
@@ -142,6 +215,28 @@ type (
 		ProfitAmount float64 `json:"profitAmount,omitempty"`
 	}
 )
+
+func (ur UpdateOrderRequest) MarshalJSON() ([]byte, error) {
+	type alias UpdateOrderRequest
+
+	aux := struct {
+		GoodTillDateString string `json:"goodTillDate,omitempty"`
+		alias
+	}{
+		alias: alias(ur),
+	}
+
+	if !ur.GoodTillDate.IsZero() {
+		aux.GoodTillDateString = ur.GoodTillDate.Format(dateFormat)
+	}
+
+	data, err := json.Marshal(aux)
+	if err != nil {
+		return nil, NewRequestPayloadEncodingError(err)
+	}
+
+	return data, nil
+}
 
 func (o *orders) Create(ctx context.Context, req CreateOrderRequest) (string, error) {
 	headers := o.tokens.headers()

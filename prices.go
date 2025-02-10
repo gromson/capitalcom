@@ -26,10 +26,10 @@ const (
 )
 
 type PricesParams struct {
-	Resolution Resolution `json:"resolution"`
-	Max        int        `json:"max"`
-	From       time.Time  `json:"from"`
-	To         time.Time  `json:"to"`
+	Resolution Resolution
+	Max        int
+	From       time.Time
+	To         time.Time
 }
 
 func (p *PricesParams) toQueryString() string {
@@ -61,8 +61,8 @@ type (
 	}
 
 	Price struct {
-		SnapshotTime     time.Time
-		SnapshotTimeUTC  time.Time
+		SnapshotTime     time.Time `json:"-"`
+		SnapshotTimeUTC  time.Time `json:"-"`
 		OpenPrice        PriceData `json:"openPrice"`
 		ClosePrice       PriceData `json:"closePrice"`
 		HighPrice        PriceData `json:"highPrice"`
@@ -77,17 +77,17 @@ type (
 )
 
 func (pr *Price) UnmarshalJSON(data []byte) error {
-	type Alias Price
+	type alias Price
 
 	aux := &struct {
 		SnapshotTimeString    string `json:"snapshotTime"`
 		SnapshotTimeUTCString string `json:"snapshotTimeUTC"` //nolint:tagliatelle
-		*Alias
+		*alias
 	}{
-		Alias: (*Alias)(pr),
+		alias: (*alias)(pr),
 	}
 
-	if err := json.Unmarshal(data, &aux); err != nil { //nolint:musttag
+	if err := json.Unmarshal(data, &aux); err != nil {
 		return NewResponsePayloadDecodingError(err)
 	}
 
