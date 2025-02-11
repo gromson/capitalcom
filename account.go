@@ -40,7 +40,7 @@ type (
 func (a *account) List(ctx context.Context) ([]Account, error) {
 	headers := a.tokens.headers()
 
-	res, err := get[accountListResponsePayload](ctx, a.Client, "/account", headers)
+	res, err := get[accountListResponsePayload](ctx, a.Client, "/accounts", headers)
 	if err != nil {
 		return nil, err
 	}
