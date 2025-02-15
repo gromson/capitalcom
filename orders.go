@@ -216,6 +216,38 @@ type (
 	}
 )
 
+func (cr CreateOrderRequest) MarshalJSON() ([]byte, error) {
+	updateOrderRequestJSON, err := cr.UpdateOrderRequest.MarshalJSON()
+	if err != nil {
+		return nil, NewRequestPayloadEncodingError(err)
+	}
+
+	aux := struct {
+		Direction PositionDirection `json:"direction"`
+		Epic      string            `json:"epic"`
+		Size      float64           `json:"size"`
+		Type      OrderType         `json:"type"`
+	}{
+		Direction: cr.Direction,
+		Epic:      cr.Epic,
+		Size:      cr.Size,
+		Type:      cr.Type,
+	}
+
+	createOrderRequestJSON, err := json.Marshal(aux)
+	if err != nil {
+		return nil, NewRequestPayloadEncodingError(err)
+	}
+
+	updateOrderRequestJSON[0] = ','
+
+	merged := make([]byte, 0, len(createOrderRequestJSON)+len(updateOrderRequestJSON)-1)
+	merged = append(merged, createOrderRequestJSON[:len(createOrderRequestJSON)-1]...)
+	merged = append(merged, updateOrderRequestJSON...)
+
+	return merged, nil
+}
+
 func (ur UpdateOrderRequest) MarshalJSON() ([]byte, error) {
 	type alias UpdateOrderRequest
 
