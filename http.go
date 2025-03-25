@@ -5,7 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"log/slog"
 	"net/http"
+	"net/http/httputil"
 )
 
 type response[TResPayload any] struct {
@@ -94,7 +96,7 @@ func doRequest[TResPayload any](
 
 	setRequestHeaders(req, headers)
 
-	c.logger.With("request", req).Debug("sending a request")
+	logRequest(ctx, req, c.logger)
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
@@ -108,7 +110,7 @@ func doRequest[TResPayload any](
 		}
 	}()
 
-	c.logger.With("response", res).Debug("received a response")
+	logResponse(ctx, res, c.logger)
 
 	if res.StatusCode != http.StatusOK {
 		return nil, handleErrorResponse(res)
@@ -148,4 +150,34 @@ func handleErrorResponse(res *http.Response) error {
 	}
 
 	return NewAPIError(res.StatusCode, errPayload.ErrorCode)
+}
+
+func logRequest(ctx context.Context, req *http.Request, logger *slog.Logger) {
+	if logger == nil || !logger.Enabled(ctx, slog.LevelDebug) {
+		return
+	}
+
+	dump, err := httputil.DumpRequest(req, true)
+	if err != nil {
+		logger.With("error", err).Error("failed to dump a request")
+
+		return
+	}
+
+	logger.With("request", dump).Debug("sending a request")
+}
+
+func logResponse(ctx context.Context, res *http.Response, logger *slog.Logger) {
+	if logger == nil || !logger.Enabled(ctx, slog.LevelDebug) {
+		return
+	}
+
+	dump, err := httputil.DumpResponse(res, true)
+	if err != nil {
+		logger.With("error", err).Error("failed to dump a response")
+
+		return
+	}
+
+	logger.With("response", dump).Debug("received a response")
 }
