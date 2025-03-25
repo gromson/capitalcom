@@ -39,7 +39,7 @@ type (
 		DealID         string            `json:"dealId"`
 		DealReference  string            `json:"dealReference"`
 		WorkingOrderID string            `json:"workingOrderId"`
-		Size           int               `json:"size"`
+		Size           float64           `json:"size"`
 		Leverage       int               `json:"leverage"`
 		UPL            float64           `json:"upl"`
 		Direction      PositionDirection `json:"direction"`
@@ -55,7 +55,7 @@ type (
 		Epic                     string    `json:"epic"`
 		Symbol                   string    `json:"symbol"`
 		InstrumentType           string    `json:"instrumentType"`
-		LotSize                  int       `json:"lotSize"`
+		LotSize                  float64   `json:"lotSize"`
 		High                     float64   `json:"high"`
 		Low                      float64   `json:"low"`
 		PercentageChange         float64   `json:"percentageChange"`
