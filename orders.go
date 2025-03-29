@@ -105,8 +105,8 @@ func (a *WorkingOrderData) UnmarshalJSON(data []byte) error {
 	type alias WorkingOrderData
 
 	aux := &struct {
-		GoodTillDateString    string `json:"goodTillDate"`
-		GoodTillDateUTCString string `json:"goodTillDateUTC"` //nolint:tagliatelle
+		GoodTillDateString    string `json:"goodTillDate,omitempty"`
+		GoodTillDateUTCString string `json:"goodTillDateUTC,omitempty"` //nolint:tagliatelle
 		CreatedDateString     string `json:"createdDate"`
 		CreatedDateUTCString  string `json:"createdDateUTC"` //nolint:tagliatelle
 		*alias
@@ -120,14 +120,18 @@ func (a *WorkingOrderData) UnmarshalJSON(data []byte) error {
 
 	var err error
 
-	a.GoodTillDate, err = time.Parse(dateFormat, aux.GoodTillDateString)
-	if err != nil {
-		return NewResponsePayloadDecodingError(err)
+	if aux.GoodTillDateString != "" {
+		a.GoodTillDate, err = time.Parse(dateFormat, aux.GoodTillDateString)
+		if err != nil {
+			return NewResponsePayloadDecodingError(err)
+		}
 	}
 
-	a.GoodTillDateUTC, err = time.Parse(dateFormat, aux.GoodTillDateUTCString)
-	if err != nil {
-		return NewResponsePayloadDecodingError(err)
+	if aux.GoodTillDateUTCString != "" {
+		a.GoodTillDateUTC, err = time.Parse(dateFormat, aux.GoodTillDateUTCString)
+		if err != nil {
+			return NewResponsePayloadDecodingError(err)
+		}
 	}
 
 	a.CreatedDate, err = time.Parse(dateFormat, aux.CreatedDateString)

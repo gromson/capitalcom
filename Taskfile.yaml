@@ -13,27 +13,27 @@ tasks:
     cmds:
       - '{{.LOCAL_OR_DOCKER}} go mod tidy'
     deps:
-      - docker:build
+      - task: ensure-tidy-available
 
   wsl:
     desc: 'Run wsl'
     cmds:
       - '{{.LOCAL_OR_DOCKER}} wsl -fix ./... || true'
     deps:
-      - docker:build
+      - task: ensure-wsl-available
 
   gofumpt:
     desc: 'Run gofumpt'
     cmds:
       - '{{.LOCAL_OR_DOCKER}} gofumpt -l -w .'
     deps:
-      - docker:build
+      - task: ensure-gofumpt-available
 
   testifylint:
     desc: 'Run testifylint'
     cmd: '{{.LOCAL_OR_DOCKER}} testifylint --fix ./...'
     deps:
-      - docker:build
+      - task: ensure-testifylint-available
 
   fix:
     desc: 'Run fixers'
@@ -45,3 +45,57 @@ tasks:
   lint:
     desc: 'Run golangci-lint'
     cmd: 'docker run -t --rm -v $(pwd):/app -v ~/go/pkg:/go/pkg -w /app golangci/golangci-lint:v1.63.1 golangci-lint run -v'
+
+##################
+# Internal Tasks #
+##################
+  ensure-tidy-available:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        if [ "{{.RUN_LOCAL}}" = "false" ]; then
+          task docker:build
+        fi
+
+  ensure-wsl-available:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        if [ "{{.RUN_LOCAL}}" = "true" ]; then
+          if ! command -v wsl &> /dev/null; then
+            echo "wsl is not installed. Please run: go install github.com/bombsimon/wsl/v4/cmd...@master"
+            exit 1
+          fi
+        else
+          task docker:build
+        fi
+
+  ensure-gofumpt-available:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        if [ "{{.RUN_LOCAL}}" = "true" ]; then
+          if ! command -v gofumpt &> /dev/null; then
+            echo "gofumpt is not installed. Please run: go install mvdan.cc/gofumpt@latest"
+            exit 1
+          fi
+        else
+          task docker:build
+        fi
+
+  ensure-testifylint-available:
+    internal: true
+    silent: true
+    cmds:
+      - |
+        if [ "{{.RUN_LOCAL}}" = "true" ]; then
+          if ! command -v testifylint &> /dev/null; then
+            echo "testifylint is not installed. Please run: go install github.com/Antonboom/testifylint@latest"
+            exit 1
+          fi
+        else
+          task docker:build
+        fi
