@@ -32,7 +32,7 @@ type PricesParams struct {
 	To         time.Time
 }
 
-func (p *PricesParams) toQueryString() string {
+func (p PricesParams) toQueryString() string {
 	values := url.Values{}
 
 	if p.Resolution != "" {
@@ -44,11 +44,11 @@ func (p *PricesParams) toQueryString() string {
 	}
 
 	if !p.From.IsZero() {
-		values.Add("from", p.From.Format(dateFormat))
+		values.Add("from", p.From.UTC().Format(dateFormat))
 	}
 
 	if !p.To.IsZero() {
-		values.Add("to", p.To.Format(dateFormat))
+		values.Add("to", p.To.UTC().Format(dateFormat))
 	}
 
 	return values.Encode()
@@ -106,6 +106,7 @@ func (pr *Price) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// History retrieves historical prices for an instrument using the requested resolution and time range.
 func (p *prices) History(ctx context.Context, epic string, params PricesParams) (*Prices, error) {
 	headers := p.tokens.headers()
 
